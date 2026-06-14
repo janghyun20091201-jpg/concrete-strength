@@ -15,7 +15,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 
 # ────────────────────────────────────────────────────────────────────────────
 #  PAGE CONFIG  (반드시 첫 st 호출)
@@ -136,19 +135,7 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
   display:grid;grid-template-columns:1fr;align-items:end;padding-top:6px;}
 .orb-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   pointer-events:none;z-index:1;}
-.orb-stage{position:relative;width:min(46vw,520px);aspect-ratio:1;pointer-events:auto;
-  cursor:pointer;animation:floaty 9s ease-in-out infinite;-webkit-tap-highlight-color:transparent;}
-.orb{position:absolute;inset:0;width:100%;height:100%;
-  transition:opacity .55s ease, transform .8s cubic-bezier(.65,0,.18,1);will-change:transform,opacity;}
-.orb.sphere{opacity:1;transform:rotate(0deg) scale(1);}
-.orb.cube{opacity:0;transform:rotate(-24deg) scale(.62);}
-.orb-stage.is-cube .orb.sphere{opacity:0;transform:rotate(24deg) scale(.62);}
-.orb-stage.is-cube .orb.cube{opacity:1;transform:rotate(0deg) scale(1);}
-.orb-hint{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);
-  font-family:'Paperlogy';font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--muted-2);font-weight:600;white-space:nowrap;pointer-events:none;
-  display:flex;align-items:center;gap:6px;opacity:.9;animation:hintpulse 2.6s ease-in-out infinite;}
-.orb-hint b{color:var(--accent);}
+.orb{width:min(46vw,520px);aspect-ratio:1;animation:floaty 9s ease-in-out infinite;}
 .hero-grid{position:relative;z-index:2;width:100%;
   display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:end;
   padding-bottom:14px;}
@@ -203,14 +190,14 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
 .panel-h .s{color:var(--muted);font-size:13px;font-weight:400;margin-left:auto;}
 
 /* input row label */
-.ic{display:flex;align-items:flex-end;justify-content:space-between;margin:20px 0 -8px;}
+.ic{display:flex;align-items:flex-end;justify-content:space-between;margin:18px 0 2px;}
 .ic-l{display:flex;flex-direction:column;gap:2px;}
 .ic-kr{font-family:'Paperlogy';font-weight:600;font-size:16px;letter-spacing:-.02em;}
 .ic-en{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500;}
 .ic-rng{font-family:'Paperlogy';font-size:11.5px;color:var(--muted-2);font-weight:500;letter-spacing:.02em;}
 
 /* 큰 검은 숫자 = number_input 을 텍스트처럼 (누르면 바로 키보드 입력) */
-[data-testid="stNumberInput"]{margin:-2px 0 -8px;}
+[data-testid="stNumberInput"]{margin:0 0 -6px;}
 [data-testid="stNumberInput"] [data-baseweb="input"],
 [data-testid="stNumberInput"] [data-baseweb="base-input"]{
   background:transparent!important;border:none!important;box-shadow:none!important;}
@@ -276,12 +263,11 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
 @keyframes rise{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
 @keyframes floaty{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-26px) rotate(2.5deg);}}
-@keyframes hintpulse{0%,100%{opacity:.45;}50%{opacity:.95;}}
 
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;gap:26px;}
   .hero-right{margin-top:8px;}
-  .orb-stage{width:74vw;}
+  .orb{width:74vw;opacity:.9;}
   .feat-mini{flex-wrap:wrap;}
 }
 </style>
@@ -292,8 +278,8 @@ st.markdown(CSS, unsafe_allow_html=True)
 # ────────────────────────────────────────────────────────────────────────────
 #  HERO  (정적 — 분위기/브랜딩)
 # ────────────────────────────────────────────────────────────────────────────
-SPHERE_SVG = """
-<svg class="orb sphere" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+ORB_SVG = """
+<svg class="orb" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
  <defs>
   <radialGradient id="sphere" cx="40%" cy="34%" r="68%">
     <stop offset="0%" stop-color="#fffaf4"/>
@@ -333,52 +319,13 @@ SPHERE_SVG = """
 </svg>
 """
 
-CUBE_SVG = """
-<svg class="orb cube" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
- <defs>
-  <radialGradient id="csphere" cx="40%" cy="34%" r="74%">
-    <stop offset="0%" stop-color="#fffaf4"/>
-    <stop offset="42%" stop-color="#ffe6d3"/>
-    <stop offset="74%" stop-color="#f0ddd1"/>
-    <stop offset="100%" stop-color="#e6e3de"/>
-  </radialGradient>
-  <radialGradient id="cglow" cx="50%" cy="54%" r="50%">
-    <stop offset="0%" stop-color="#ff9e63" stop-opacity=".92"/>
-    <stop offset="60%" stop-color="#ffb37e" stop-opacity="0"/>
-  </radialGradient>
-  <filter id="cspeckle">
-    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="9" stitchTiles="stitch"/>
-    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.35 0.9"/>
-    <feGaussianBlur stdDeviation="0.25"/>
-  </filter>
-  <filter id="cspeckle2">
-    <feTurbulence type="fractalNoise" baseFrequency="0.42" numOctaves="2" seed="4" stitchTiles="stitch"/>
-    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.5 0.95"/>
-  </filter>
-  <filter id="csoft"><feGaussianBlur stdDeviation="9"/></filter>
-  <clipPath id="cubeclip"><rect x="150" y="146" width="300" height="300" rx="34"/></clipPath>
- </defs>
- <ellipse cx="300" cy="538" rx="146" ry="17" fill="#7a756e" opacity=".15" filter="url(#csoft)"/>
- <g transform="rotate(13 300 300)">
-   <rect x="150" y="146" width="300" height="300" rx="34" fill="url(#csphere)"/>
-   <rect x="150" y="146" width="300" height="300" rx="34" fill="url(#cglow)"/>
-   <rect x="110" y="106" width="380" height="380" fill="#ffffff" opacity=".6"
-         filter="url(#cspeckle)" clip-path="url(#cubeclip)"/>
-   <rect x="110" y="106" width="380" height="380" fill="#ffffff" opacity=".48"
-         filter="url(#cspeckle2)" clip-path="url(#cubeclip)"/>
-   <rect x="150" y="146" width="300" height="300" rx="34" fill="none"
-         stroke="#ffffff" stroke-opacity=".55" stroke-width="2"/>
- </g>
-</svg>
-"""
-
 HERO = """
 <div class="topbar">
   <div class="brand">M<span class="dot"></span>X</div>
 </div>
 
 <section class="hero">
-  <div class="orb-wrap"><div class="orb-stage">__SPHERE____CUBE__<div class="orb-hint"><b>⬡</b> 클릭하여 변형</div></div></div>
+  <div class="orb-wrap">__ORB__</div>
   <div class="hero-grid">
     <div class="hero-left">
       <div class="eyebrow">Concrete Strength Studio · <b>Gradient Boosting</b></div>
@@ -403,27 +350,8 @@ HERO = """
     </div>
   </div>
 </section>
-""".replace("__SPHERE__", SPHERE_SVG).replace("__CUBE__", CUBE_SVG)
+""".replace("__ORB__", ORB_SVG)
 st.markdown(HERO, unsafe_allow_html=True)
-
-# 가운데 오브 클릭 → 구 ↔ 정육면체 토글. 부모 DOM의 .orb-stage 에 클릭 핸들러를 건다.
-components.html(
-    """<script>
-(function(){
-  var pdoc = window.parent.document;
-  function wire(){
-    var s = pdoc.querySelector('.orb-stage');
-    if(s && !s.dataset.wired){
-      s.dataset.wired = '1';
-      s.addEventListener('click', function(){ s.classList.toggle('is-cube'); });
-    }
-  }
-  wire();
-  var n = 0, iv = setInterval(function(){ wire(); if(++n > 25) clearInterval(iv); }, 200);
-})();
-</script>""",
-    height=0,
-)
 
 
 # ────────────────────────────────────────────────────────────────────────────
