@@ -472,7 +472,7 @@ st.markdown(
 <div class="foot">
   <div>
     <b>MIX — Concrete Strength Studio</b><br>
-    Model · Random Forest Regressor &nbsp;|&nbsp; Test R² ≈ 0.82<br>
+    Model · Random Forest Regressor &nbsp;|&nbsp; Test R² ≈ 0.8<br>
     Active · {MODEL_SOURCE}
   </div>
 </div>
