@@ -361,7 +361,7 @@ st.markdown(
     <div class="sec-k">The Mix Studio</div>
     <h2 class="sec-t">배합비를 조절해 <em>강도를 예측</em>하세요.</h2>
   </div>
-  <p class="sec-d">값을 직접 입력(또는 +/− 버튼)하면 결과가 즉시 갱신됩니다. 모든 값은 Kaggle
+  <p class="sec-d">값을 직접 입력(또는 슬라이더 이용)하면 결과가 즉시 갱신됩니다. 모든 값은 Kaggle
   콘크리트 압축강도 데이터셋의 실제 분포 범위 안에서 조정됩니다.</p>
 </div>
 """,
