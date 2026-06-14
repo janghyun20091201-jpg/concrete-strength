@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 MIX — Concrete Strength Studio
-머신러닝(Gradient Boosting) 기반 콘크리트 압축강도 예측 웹앱.
+머신러닝(Random Forest) 기반 콘크리트 압축강도 예측 웹앱.
 
 입력 4종 (학습 시 컬럼 순서와 동일):
     ['시멘트량', '고성능 감수제량', '재령 기간', '물양']
@@ -29,7 +29,7 @@ st.set_page_config(
 # 학습 시 X 컬럼 순서 — 절대 바꾸지 말 것 (모델 feature_names_in_ 과 일치해야 함)
 FEATURES = ["시멘트량", "고성능 감수제량", "재령 기간", "물양"]
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "concrete_strength_new_model.pkl"
+MODEL_PATH = BASE_DIR / "concrete_strength_rf_model.pkl"
 DATA_PATH = BASE_DIR / "model_data.npz"
 
 
@@ -44,21 +44,18 @@ def get_model():
 
         m = joblib.load(MODEL_PATH)
         m.predict(pd.DataFrame([[300, 5, 28, 180]], columns=FEATURES))  # 동작 확인
-        return m, "원본 모델 (concrete_strength_new_model.pkl)"
+        return m, "원본 모델 (concrete_strength_rf_model.pkl)"
     except Exception:
         pass
 
     # 2) 폴백 — 원본 모델의 예측을 학습한 distilled 데이터로 재학습 (버전 무관)
-    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.ensemble import RandomForestRegressor
 
     arr = np.load(DATA_PATH)["data"].astype(float)
     X = pd.DataFrame(arr[:, :4], columns=FEATURES)
     y = arr[:, 4]
-    m = GradientBoostingRegressor(
-        n_estimators=500, max_depth=4, learning_rate=0.05,
-        subsample=0.9, random_state=0,
-    ).fit(X, y)
-    return m, "호환 재학습 모델 (Gradient Boosting)"
+    m = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1).fit(X, y)
+    return m, "호환 재학습 모델 (Random Forest)"
 
 
 try:
@@ -475,7 +472,7 @@ st.markdown(
 <div class="foot">
   <div>
     <b>MIX — Concrete Strength Studio</b><br>
-    Model · Gradient Boosting Regressor &nbsp;|&nbsp; Test R² ≈ 0.82<br>
+    Model · Random Forest Regressor &nbsp;|&nbsp; Test R² ≈ 0.82<br>
     Active · {MODEL_SOURCE}
   </div>
 </div>
