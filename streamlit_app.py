@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ────────────────────────────────────────────────────────────────────────────
 #  PAGE CONFIG  (반드시 첫 st 호출)
@@ -135,7 +136,19 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
   display:grid;grid-template-columns:1fr;align-items:end;padding-top:6px;}
 .orb-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   pointer-events:none;z-index:1;}
-.orb{width:min(46vw,520px);aspect-ratio:1;animation:floaty 9s ease-in-out infinite;}
+.orb-stage{position:relative;width:min(46vw,520px);aspect-ratio:1;pointer-events:auto;
+  cursor:pointer;animation:floaty 9s ease-in-out infinite;-webkit-tap-highlight-color:transparent;}
+.orb{position:absolute;inset:0;width:100%;height:100%;
+  transition:opacity .55s ease, transform .8s cubic-bezier(.65,0,.18,1);will-change:transform,opacity;}
+.orb.sphere{opacity:1;transform:rotate(0deg) scale(1);}
+.orb.cube{opacity:0;transform:rotate(-24deg) scale(.62);}
+.orb-stage.is-cube .orb.sphere{opacity:0;transform:rotate(24deg) scale(.62);}
+.orb-stage.is-cube .orb.cube{opacity:1;transform:rotate(0deg) scale(1);}
+.orb-hint{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);
+  font-family:'Paperlogy';font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted-2);font-weight:600;white-space:nowrap;pointer-events:none;
+  display:flex;align-items:center;gap:6px;opacity:.9;animation:hintpulse 2.6s ease-in-out infinite;}
+.orb-hint b{color:var(--accent);}
 .hero-grid{position:relative;z-index:2;width:100%;
   display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:end;
   padding-bottom:14px;}
@@ -190,28 +203,36 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
 .panel-h .s{color:var(--muted);font-size:13px;font-weight:400;margin-left:auto;}
 
 /* input row label */
-.ic{display:flex;align-items:flex-end;justify-content:space-between;margin:20px 0 6px;}
+.ic{display:flex;align-items:flex-end;justify-content:space-between;margin:20px 0 -8px;}
 .ic-l{display:flex;flex-direction:column;gap:2px;}
 .ic-kr{font-family:'Paperlogy';font-weight:600;font-size:16px;letter-spacing:-.02em;}
 .ic-en{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500;}
 .ic-rng{font-family:'Paperlogy';font-size:11.5px;color:var(--muted-2);font-weight:500;letter-spacing:.02em;}
 
-/* ---------- number inputs (키보드 입력 가능) ---------- */
-[data-testid="stNumberInput"]{margin:0 0 4px;}
-[data-testid="stNumberInput"] [data-baseweb="input"]{
-  background:rgba(255,255,255,.6)!important;border:1.5px solid rgba(11,11,12,.1)!important;
-  border-radius:15px!important;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
-[data-testid="stNumberInput"] [data-baseweb="input"]:focus-within{
-  border-color:var(--accent)!important;box-shadow:0 0 0 4px var(--accent-soft)!important;}
+/* 큰 검은 숫자 = number_input 을 텍스트처럼 (누르면 바로 키보드 입력) */
+[data-testid="stNumberInput"]{margin:-2px 0 -8px;}
+[data-testid="stNumberInput"] [data-baseweb="input"],
+[data-testid="stNumberInput"] [data-baseweb="base-input"]{
+  background:transparent!important;border:none!important;box-shadow:none!important;}
 [data-testid="stNumberInput"] input{
-  font-family:'SeoulAlrim'!important;font-weight:700!important;font-size:25px!important;
-  color:var(--ink)!important;background:transparent!important;padding:9px 14px!important;
-  -webkit-text-fill-color:var(--ink)!important;}
-[data-testid="stNumberInput"] button{
-  background:transparent!important;border:none!important;color:var(--muted)!important;
-  border-left:1px solid rgba(11,11,12,.07)!important;transition:color .2s;}
-[data-testid="stNumberInput"] button:hover{color:var(--accent)!important;background:var(--accent-soft)!important;}
-[data-testid="stNumberInput"] button svg{fill:currentColor!important;}
+  font-family:'SeoulAlrim'!important;font-weight:700!important;font-size:34px!important;
+  color:var(--ink)!important;-webkit-text-fill-color:var(--ink)!important;background:transparent!important;
+  text-align:right!important;padding:0 2px 3px!important;cursor:text;
+  border-bottom:2px solid transparent!important;transition:border-color .2s;}
+[data-testid="stNumberInput"] [data-baseweb="input"]:hover input{border-bottom-color:rgba(11,11,12,.18)!important;}
+[data-testid="stNumberInput"] [data-baseweb="input"]:focus-within input{border-bottom-color:var(--accent)!important;}
+/* +/- 스텝 버튼 숨김 → 순수 텍스트처럼 보이게 */
+[data-testid="stNumberInput"] button,
+[data-testid="stNumberInputStepUp"], [data-testid="stNumberInputStepDown"]{display:none!important;}
+
+/* ---------- sliders ---------- */
+[data-testid="stSlider"]{padding-top:0;}
+[data-testid="stSlider"] [data-baseweb="slider"] [role="slider"]{
+  background:#fff!important;border:2px solid var(--accent)!important;
+  box-shadow:0 4px 12px -2px rgba(255,91,35,.5)!important;height:20px!important;width:20px!important;}
+[data-testid="stSlider"] [data-baseweb="slider"] > div > div{height:5px!important;}
+[data-testid="stSliderThumbValue"]{display:none!important;}
+[data-testid="stTickBarMin"], [data-testid="stTickBarMax"], [data-testid="stTickBar"]{display:none!important;}
 
 /* ---------- result card ---------- */
 .res-lab{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);font-weight:600;}
@@ -255,11 +276,12 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
 @keyframes rise{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
 @keyframes floaty{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-26px) rotate(2.5deg);}}
+@keyframes hintpulse{0%,100%{opacity:.45;}50%{opacity:.95;}}
 
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;gap:26px;}
   .hero-right{margin-top:8px;}
-  .orb{width:74vw;opacity:.9;}
+  .orb-stage{width:74vw;}
   .feat-mini{flex-wrap:wrap;}
 }
 </style>
@@ -270,8 +292,8 @@ st.markdown(CSS, unsafe_allow_html=True)
 # ────────────────────────────────────────────────────────────────────────────
 #  HERO  (정적 — 분위기/브랜딩)
 # ────────────────────────────────────────────────────────────────────────────
-ORB_SVG = """
-<svg class="orb" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+SPHERE_SVG = """
+<svg class="orb sphere" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
  <defs>
   <radialGradient id="sphere" cx="40%" cy="34%" r="68%">
     <stop offset="0%" stop-color="#fffaf4"/>
@@ -311,13 +333,52 @@ ORB_SVG = """
 </svg>
 """
 
+CUBE_SVG = """
+<svg class="orb cube" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <radialGradient id="csphere" cx="40%" cy="34%" r="74%">
+    <stop offset="0%" stop-color="#fffaf4"/>
+    <stop offset="42%" stop-color="#ffe6d3"/>
+    <stop offset="74%" stop-color="#f0ddd1"/>
+    <stop offset="100%" stop-color="#e6e3de"/>
+  </radialGradient>
+  <radialGradient id="cglow" cx="50%" cy="54%" r="50%">
+    <stop offset="0%" stop-color="#ff9e63" stop-opacity=".92"/>
+    <stop offset="60%" stop-color="#ffb37e" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="cspeckle">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="9" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.35 0.9"/>
+    <feGaussianBlur stdDeviation="0.25"/>
+  </filter>
+  <filter id="cspeckle2">
+    <feTurbulence type="fractalNoise" baseFrequency="0.42" numOctaves="2" seed="4" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.5 0.95"/>
+  </filter>
+  <filter id="csoft"><feGaussianBlur stdDeviation="9"/></filter>
+  <clipPath id="cubeclip"><rect x="150" y="146" width="300" height="300" rx="34"/></clipPath>
+ </defs>
+ <ellipse cx="300" cy="538" rx="146" ry="17" fill="#7a756e" opacity=".15" filter="url(#csoft)"/>
+ <g transform="rotate(13 300 300)">
+   <rect x="150" y="146" width="300" height="300" rx="34" fill="url(#csphere)"/>
+   <rect x="150" y="146" width="300" height="300" rx="34" fill="url(#cglow)"/>
+   <rect x="110" y="106" width="380" height="380" fill="#ffffff" opacity=".6"
+         filter="url(#cspeckle)" clip-path="url(#cubeclip)"/>
+   <rect x="110" y="106" width="380" height="380" fill="#ffffff" opacity=".48"
+         filter="url(#cspeckle2)" clip-path="url(#cubeclip)"/>
+   <rect x="150" y="146" width="300" height="300" rx="34" fill="none"
+         stroke="#ffffff" stroke-opacity=".55" stroke-width="2"/>
+ </g>
+</svg>
+"""
+
 HERO = """
 <div class="topbar">
   <div class="brand">M<span class="dot"></span>X</div>
 </div>
 
 <section class="hero">
-  <div class="orb-wrap">__ORB__</div>
+  <div class="orb-wrap"><div class="orb-stage">__SPHERE____CUBE__<div class="orb-hint"><b>⬡</b> 클릭하여 변형</div></div></div>
   <div class="hero-grid">
     <div class="hero-left">
       <div class="eyebrow">Concrete Strength Studio · <b>Gradient Boosting</b></div>
@@ -342,8 +403,27 @@ HERO = """
     </div>
   </div>
 </section>
-""".replace("__ORB__", ORB_SVG)
+""".replace("__SPHERE__", SPHERE_SVG).replace("__CUBE__", CUBE_SVG)
 st.markdown(HERO, unsafe_allow_html=True)
+
+# 가운데 오브 클릭 → 구 ↔ 정육면체 토글. 부모 DOM의 .orb-stage 에 클릭 핸들러를 건다.
+components.html(
+    """<script>
+(function(){
+  var pdoc = window.parent.document;
+  function wire(){
+    var s = pdoc.querySelector('.orb-stage');
+    if(s && !s.dataset.wired){
+      s.dataset.wired = '1';
+      s.addEventListener('click', function(){ s.classList.toggle('is-cube'); });
+    }
+  }
+  wire();
+  var n = 0, iv = setInterval(function(){ wire(); if(++n > 25) clearInterval(iv); }, 200);
+})();
+</script>""",
+    height=0,
+)
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -367,7 +447,17 @@ left, right = st.columns([1.12, 0.88], gap="large")
 
 
 def input_row(idx, kr, en, unit, lo, hi, default, step, fmt="%.0f", key=None):
-    """라벨(상단) + 키보드로 직접 입력 가능한 숫자 입력칸(하단)."""
+    """라벨 + 큰 숫자(누르면 키보드 입력) + 슬라이더. 둘은 서로 동기화된다."""
+    nk, sk = f"{key}_n", f"{key}_s"
+    st.session_state.setdefault(nk, default)
+    st.session_state.setdefault(sk, default)
+
+    def _from_num():
+        st.session_state[sk] = st.session_state[nk]
+
+    def _from_sld():
+        st.session_state[nk] = st.session_state[sk]
+
     rng = f"{fmt % lo}–{fmt % hi} {unit}"
     st.markdown(
         f"""<div class="ic">
@@ -377,11 +467,17 @@ def input_row(idx, kr, en, unit, lo, hi, default, step, fmt="%.0f", key=None):
             </div>""",
         unsafe_allow_html=True,
     )
-    val = st.number_input(
-        kr, min_value=lo, max_value=hi, value=default, step=step,
-        format=fmt, key=key, label_visibility="collapsed",
+    # 큰 숫자(클릭하면 입력) — number_input 을 텍스트처럼 스타일링
+    st.number_input(
+        kr, min_value=lo, max_value=hi, step=step, format=fmt,
+        key=nk, on_change=_from_num, label_visibility="collapsed",
     )
-    return val
+    # 슬라이더(드래그) — 위 숫자와 동기화
+    st.slider(
+        kr, lo, hi, step=step, key=sk, on_change=_from_sld,
+        label_visibility="collapsed",
+    )
+    return st.session_state[nk]
 
 
 with left:
@@ -453,11 +549,6 @@ st.markdown(
     <b>MIX — Concrete Strength Studio</b><br>
     Model · Gradient Boosting Regressor &nbsp;|&nbsp; Test R² ≈ 0.82<br>
     Active · {MODEL_SOURCE}
-  </div>
-  <div class="r">
-    Data · Kaggle Concrete Compressive Strength<br>
-    Type · 페이퍼로지 &amp; 서울알림체<br>
-    Built with Streamlit &nbsp;&#8599;
   </div>
 </div>
 """,
