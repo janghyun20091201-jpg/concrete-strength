@@ -129,14 +129,6 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
   display:flex;align-items:center;gap:14px;}
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
   box-shadow:0 0 0 5px var(--accent-soft);margin-left:-2px;}
-.nav-r{display:flex;align-items:center;gap:20px;font-weight:500;font-size:14.5px;color:#3a3a3c;}
-.nav-r .talk{display:inline-flex;align-items:center;gap:6px;border-bottom:1.5px solid var(--ink);
-  padding-bottom:2px;}
-.nav-r .talk .ar{color:var(--accent);font-weight:700;}
-.nav-r .bar{width:1px;height:17px;background:var(--line);}
-.nav-r .menu{display:flex;flex-direction:column;gap:5px;}
-.nav-r .menu span{width:26px;height:1.5px;background:var(--ink);display:block;}
-.nav-r .menu span:last-child{width:18px;margin-left:auto;}
 
 /* ---------- hero ---------- */
 .hero{position:relative;z-index:2;min-height:min(86vh,820px);
@@ -158,17 +150,19 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
 .h-sub{max-width:540px;margin-top:26px;color:#6b6a66;font-weight:400;font-size:clamp(15px,1.3vw,18px);
   line-height:1.62;animation:rise 1s .32s both;}
 .cta{margin-top:34px;display:inline-flex;align-items:center;gap:12px;
-  background:var(--ink);color:#fff;border-radius:40px;padding:17px 30px;
+  background:var(--ink);border-radius:40px;padding:17px 30px;
   font-weight:600;font-size:15.5px;letter-spacing:.02em;cursor:pointer;
   box-shadow:0 18px 38px -18px rgba(0,0,0,.55);transition:transform .35s,box-shadow .35s;
-  animation:rise 1s .42s both;text-decoration:none;}
+  animation:rise 1s .42s both;}
+.cta, .cta:link, .cta:visited, .cta:hover, .cta:active{
+  color:#fff!important;text-decoration:none!important;}
 .cta:hover{transform:translateY(-3px);box-shadow:0 26px 46px -18px rgba(0,0,0,.6);}
-.cta .ar{color:var(--accent);font-weight:700;}
+.cta .ar{color:var(--accent)!important;font-weight:700;}
 
 .hero-right{align-self:end;display:flex;flex-direction:column;gap:22px;
   animation:rise 1s .5s both;}
-.hr-copy{font-size:clamp(15px,1.25vw,18px);line-height:1.6;color:var(--muted-2);font-weight:400;}
-.hr-copy b{color:var(--ink);font-weight:600;}
+.hr-copy{font-size:clamp(15px,1.25vw,18px);line-height:1.62;color:#4a4945;font-weight:500;}
+.hr-copy b{color:var(--ink);font-weight:700;}
 .tags{display:flex;flex-wrap:wrap;gap:9px;}
 .tag{border:1px solid var(--line);border-radius:30px;padding:9px 17px;font-size:13px;
   font-weight:500;color:#3a3a3c;background:rgba(255,255,255,.4);backdrop-filter:blur(6px);
@@ -196,24 +190,28 @@ header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{dis
 .panel-h .s{color:var(--muted);font-size:13px;font-weight:400;margin-left:auto;}
 
 /* input row label */
-.ic{display:flex;align-items:flex-end;justify-content:space-between;margin:18px 0 2px;}
-.ic-l{display:flex;flex-direction:column;gap:1px;}
+.ic{display:flex;align-items:flex-end;justify-content:space-between;margin:20px 0 6px;}
+.ic-l{display:flex;flex-direction:column;gap:2px;}
 .ic-kr{font-family:'Paperlogy';font-weight:600;font-size:16px;letter-spacing:-.02em;}
 .ic-en{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500;}
-.ic-v{font-family:'SeoulAlrim';font-weight:700;font-size:30px;line-height:1;color:var(--ink);
-  display:flex;align-items:baseline;gap:5px;}
-.ic-v .u{font-family:'Paperlogy';font-weight:500;font-size:12.5px;color:var(--muted);letter-spacing:0;}
+.ic-rng{font-family:'Paperlogy';font-size:11.5px;color:var(--muted-2);font-weight:500;letter-spacing:.02em;}
 
-/* ---------- sliders ---------- */
-[data-testid="stSlider"]{padding-top:2px;}
-[data-testid="stSlider"] [data-baseweb="slider"] [role="slider"]{
-  background:#fff!important;border:2px solid var(--accent)!important;
-  box-shadow:0 4px 12px -2px rgba(255,91,35,.5)!important;height:20px!important;width:20px!important;}
-[data-testid="stSlider"] [data-baseweb="slider"] > div > div{height:5px!important;}
-/* 큰 커스텀 값 표시와 중복되는 네이티브 thumb 값 말풍선은 숨김 */
-[data-testid="stSliderThumbValue"]{display:none!important;}
-[data-testid="stTickBarMin"], [data-testid="stTickBarMax"], [data-testid="stTickBar"]{
-  font-family:'Paperlogy'!important;color:var(--muted-2)!important;font-size:11px!important;font-weight:500!important;}
+/* ---------- number inputs (키보드 입력 가능) ---------- */
+[data-testid="stNumberInput"]{margin:0 0 4px;}
+[data-testid="stNumberInput"] [data-baseweb="input"]{
+  background:rgba(255,255,255,.6)!important;border:1.5px solid rgba(11,11,12,.1)!important;
+  border-radius:15px!important;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
+[data-testid="stNumberInput"] [data-baseweb="input"]:focus-within{
+  border-color:var(--accent)!important;box-shadow:0 0 0 4px var(--accent-soft)!important;}
+[data-testid="stNumberInput"] input{
+  font-family:'SeoulAlrim'!important;font-weight:700!important;font-size:25px!important;
+  color:var(--ink)!important;background:transparent!important;padding:9px 14px!important;
+  -webkit-text-fill-color:var(--ink)!important;}
+[data-testid="stNumberInput"] button{
+  background:transparent!important;border:none!important;color:var(--muted)!important;
+  border-left:1px solid rgba(11,11,12,.07)!important;transition:color .2s;}
+[data-testid="stNumberInput"] button:hover{color:var(--accent)!important;background:var(--accent-soft)!important;}
+[data-testid="stNumberInput"] button svg{fill:currentColor!important;}
 
 /* ---------- result card ---------- */
 .res-lab{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);font-weight:600;}
@@ -316,11 +314,6 @@ ORB_SVG = """
 HERO = """
 <div class="topbar">
   <div class="brand">M<span class="dot"></span>X</div>
-  <div class="nav-r">
-    <span class="talk">예측 시작 <span class="ar">&#8599;</span></span>
-    <span class="bar"></span>
-    <span class="menu"><span></span><span></span></span>
-  </div>
 </div>
 
 <section class="hero">
@@ -363,7 +356,7 @@ st.markdown(
     <div class="sec-k">The Mix Studio</div>
     <h2 class="sec-t">배합비를 조절해 <em>강도를 예측</em>하세요.</h2>
   </div>
-  <p class="sec-d">슬라이더를 움직이면 결과가 즉시 갱신됩니다. 모든 값은 Kaggle
+  <p class="sec-d">값을 직접 입력(또는 +/− 버튼)하면 결과가 즉시 갱신됩니다. 모든 값은 Kaggle
   콘크리트 압축강도 데이터셋의 실제 분포 범위 안에서 조정됩니다.</p>
 </div>
 """,
@@ -373,17 +366,20 @@ st.markdown(
 left, right = st.columns([1.12, 0.88], gap="large")
 
 
-def input_row(idx, kr, en, unit, lo, hi, default, step, fmt="{:g}", key=None):
-    """라벨/현재값(상단) + 네이티브 슬라이더(하단)."""
-    ph = st.empty()
-    val = st.slider(kr, lo, hi, default, step, key=key, label_visibility="collapsed")
-    ph.markdown(
+def input_row(idx, kr, en, unit, lo, hi, default, step, fmt="%.0f", key=None):
+    """라벨(상단) + 키보드로 직접 입력 가능한 숫자 입력칸(하단)."""
+    rng = f"{fmt % lo}–{fmt % hi} {unit}"
+    st.markdown(
         f"""<div class="ic">
               <div class="ic-l"><span class="ic-kr">{idx} · {kr}</span>
-              <span class="ic-en">{en}</span></div>
-              <div class="ic-v">{fmt.format(val)}<span class="u">{unit}</span></div>
+              <span class="ic-en">{en} · {unit}</span></div>
+              <div class="ic-rng">{rng}</div>
             </div>""",
         unsafe_allow_html=True,
+    )
+    val = st.number_input(
+        kr, min_value=lo, max_value=hi, value=default, step=step,
+        format=fmt, key=key, label_visibility="collapsed",
     )
     return val
 
@@ -395,10 +391,10 @@ with left:
         <span class="s">Mix proportions</span></div>""",
         unsafe_allow_html=True,
     )
-    cement = input_row("01", "시멘트량", "Cement", "kg/m³", 100.0, 600.0, 281.0, 1.0, key="c")
-    superp = input_row("02", "고성능 감수제량", "Superplasticizer", "kg/m³", 0.0, 35.0, 6.0, 0.1, fmt="{:.1f}", key="s")
-    age = input_row("03", "재령 기간", "Age", "days", 1, 200, 28, 1, key="a")
-    water = input_row("04", "물양", "Water", "kg/m³", 120.0, 250.0, 182.0, 0.5, fmt="{:.1f}", key="w")
+    cement = input_row("01", "시멘트량", "Cement", "kg/m³", 100.0, 600.0, 281.0, 1.0, fmt="%.0f", key="c")
+    superp = input_row("02", "고성능 감수제량", "Superplasticizer", "kg/m³", 0.0, 35.0, 6.0, 0.1, fmt="%.1f", key="s")
+    age = input_row("03", "재령 기간", "Age", "days", 1, 200, 28, 1, fmt="%d", key="a")
+    water = input_row("04", "물양", "Water", "kg/m³", 120.0, 250.0, 182.0, 0.5, fmt="%.1f", key="w")
 
 
 # ── 예측 (학습 시 컬럼 순서 그대로) ──
