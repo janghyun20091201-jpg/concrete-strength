@@ -110,9 +110,19 @@ html,body,[class*="css"], .stApp, [data-testid="stAppViewContainer"]{
   content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-/* hide streamlit chrome */
-header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer{display:none!important;}
-[data-testid="stDecoration"]{display:none!important;}
+/* hide streamlit chrome — 단, 우측 상단 툴바(GitHub·Fork·Stop)는 남긴다 */
+#MainMenu, footer{display:none!important;}
+[data-testid="stDecoration"]{display:none!important;}          /* 맨 위 무지개 줄만 제거 */
+
+/* 헤더는 배경만 투명 처리 → 아이콘만 콘텐츠 위에 떠 보이게 */
+header[data-testid="stHeader"]{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+[data-testid="stToolbar"]{
+  z-index:5!important;                                          /* 히어로 위로 띄움 */
+  background:transparent!important;
+}
 .block-container, [data-testid="stMainBlockContainer"]{
   padding:0 clamp(20px,4.5vw,76px) 70px!important;max-width:1480px!important;
 }
